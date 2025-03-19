@@ -23,6 +23,17 @@ class Pile:
     def taille(self):
         return len(self.elements)
 
+TOKEN_TYPES = {
+    'NUMBER': '0123456789',
+    'PLUS': '+',
+    'MINUS': '-',
+    'MULTIPLY': '*',
+    'DIVIDE': '/',
+    'LPAREN': '(',
+    'RPAREN': ')',
+    'VARIABLE': 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_',
+    'ASSIGN': '='
+}
 # Définition de l'arbre binaire pour l'expression
 class Node:
     def __init__(self, value):
@@ -52,18 +63,6 @@ def construire_arbre(tokens):
     return stack.depiler()
 
 def tokenisation(expression):
-    TOKEN_TYPES = {
-        'NUMBER': '0123456789',
-        'PLUS': '+',
-        'MINUS': '-',
-        'MULTIPLY': '*',
-        'DIVIDE': '/',
-        'LPAREN': '(',
-        'RPAREN': ')',
-        'VARIABLE': 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_',
-        'ASSIGN': '='
-    }
-
     tokens = []  # Liste des jetons
     stack = Pile()  # Pile pour les opérateurs et parenthèses
     i = 0
@@ -129,9 +128,26 @@ def afficher_arbre(node, level=0):
         print("   " * level + f"{node.value}")
         afficher_arbre(node.left, level + 1)
 
+# Calcul en mode postfixe (récursif)
+def calcul_arbre_postfixe(node):
+    if node.value in TOKEN_TYPES['NUMBER']:
+        return int(node.value)
+    else:
+        left = calcul_arbre_postfixe(node.left)
+        right = calcul_arbre_postfixe(node.right)
+        if node.value == TOKEN_TYPES['PLUS']:
+            return left + right
+        elif node.value == TOKEN_TYPES['MINUS']:
+            return left - right
+        elif node.value == TOKEN_TYPES['MULTIPLY']:
+            return left * right
+        elif node.value == TOKEN_TYPES['DIVIDE']:
+            return left / right
+
 # Exemple d'utilisation
-expression = "(3 + 2) * (5 - 2)"
+expression = "(2 * 2) * (5 - 2)"
 tokens = tokenisation(expression)
 arbre = construire_arbre(tokens)
 print(tokens)
 afficher_arbre(arbre)
+print(calcul_arbre_postfixe(arbre))
