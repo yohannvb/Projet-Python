@@ -72,7 +72,7 @@ def tokenisation(expression):
         if expression[i] == " ":
             i += 1
             continue
-        
+
         # Si c'est un nombre, on le prend en entier
         if expression[i] in TOKEN_TYPES['NUMBER']:
             token = ''
@@ -95,23 +95,23 @@ def tokenisation(expression):
                 tokens.append(stack.depiler())
             stack.empiler(expression[i])
             i += 1
-        
+
         # Si c'est une parenthèse ouvrante
         elif expression[i] == TOKEN_TYPES['LPAREN']:
             stack.empiler('(')
             i += 1
-        
+
         # Si c'est une parenthèse fermante
         elif expression[i] == TOKEN_TYPES['RPAREN']:
             while not stack.est_vide() and stack.sommet() != '(':
                 tokens.append(stack.depiler())
             stack.depiler()  # Supprimer la parenthèse ouvrante
             i += 1
-        
+
         # Si c'est une affectation (=), on l'ignore
         elif expression[i] == TOKEN_TYPES['ASSIGN']:
             i += 1
-        
+
         # Si c'est un caractère invalide, on l'ignore (cela ne devrait pas arriver ici)
         else:
             i += 1
@@ -144,6 +144,13 @@ def calcul_arbre_postfixe(node):
         elif node.value == TOKEN_TYPES['DIVIDE']:
             return left / right
 
+# Fonction pour l'assignation des variables
+def assignation(variable, table_symboles):
+    if variable in globals():
+        valeur = globals()[variable]
+        table_symboles[variable] = valeur
+    return table_symboles
+
 # Exemple d'utilisation
 expression = "(2 * 2) * (5 - 2)"
 tokens = tokenisation(expression)
@@ -151,3 +158,11 @@ arbre = construire_arbre(tokens)
 print(tokens)
 afficher_arbre(arbre)
 print(calcul_arbre_postfixe(arbre))
+
+# Exemple d'utilisation de la fonction assignation
+x = '4 + 3'
+y = '5 * x'
+tokens2 = {}
+assignation("x", tokens2)
+assignation("y", tokens2)
+print(tokens2)
